@@ -49,7 +49,7 @@ exports.nuevoProducto = async (req, res, next) => {
         await producto.save();
         res.json({ mensaje: 'Se agregó un nuevo producto' });
     } catch (error) {
-        console.log(error);
+        res.send(error);
         next();
     }
 }
@@ -57,10 +57,10 @@ exports.nuevoProducto = async (req, res, next) => {
 // Mostrar todos los productos
 exports.mostrarProductos = async (req, res, next) => {
     try {
-        const productos = await Productos.find({});
+        const productos = await Productos.paginate({});
         res.json(productos);
     } catch (error) {
-        console.log(error);
+        res.send(error);
         next();
     }
 }
@@ -76,7 +76,19 @@ exports.mostrarProductoById = async (req, res, next) => {
             res.json(producto);
         }
     } catch (error) {
-        console.log(error);
+        res.send(error);
+        next();
+    }
+}
+
+// Busca y muestra productos
+exports.searchProducts = async (req, res, next) => {
+    try {
+        const { query } = req.params;
+        const productos = await Productos.find({ nombre: new RegExp(query, 'i') });
+        res.json(productos);
+    } catch (error) {
+        res.send(error);
         next();
     }
 }
@@ -98,7 +110,7 @@ exports.actualizarProductoById = async (req, res, next) => {
         const producto = await Productos.findOneAndUpdate({ _id: req.params.idProducto }, productoNuevo, { new: true });
         res.json(producto);
     } catch (error) {
-        console.log(error);
+        res.send(error);
         next();
     }
 }
@@ -129,7 +141,7 @@ exports.eliminarProductoById = async (req, res, next) => {
         await Productos.findOneAndDelete({ _id: req.params.idProducto });
         res.json({ mensaje: 'Producto eliminado con éxito' });
     } catch (error) {
-        console.log(error);
+        res.send(error);
         next();
     }
 }

@@ -1,6 +1,8 @@
 const express = require('express');
-const routes = require('./routes');
 const mongoose = require('mongoose');
+const cors = require('cors');
+
+const routes = require('./routes');
 
 // Conectar MongoDB
 // ==================================================================
@@ -23,8 +25,14 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
+// Habilitar cors
+app.use('/', cors());
+
 // Rutas de la app
 app.use('/', routes());
+
+// Carpeta publica
+app.use(express.static('uploads'));
 
 // Puerto
 app.listen(5001, () => {

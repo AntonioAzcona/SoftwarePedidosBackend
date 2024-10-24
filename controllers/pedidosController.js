@@ -7,7 +7,7 @@ exports.nuevoPedido = async (req, res, next) => {
         await pedido.save();
         res.json({ mensaje: 'Se agregó un nuevo pedido' });
     } catch (error) {
-        console.log(error);
+        res.send(error);
         next();
     }
 }
@@ -20,7 +20,28 @@ exports.mostrarPedidos = async (req, res, next) => {
         });
         res.json(pedidos);
     } catch (error) {
-        console.log(error);
+        res.send(error);
+        next();
+    }
+}
+
+// Busca y muestra pedidos
+exports.searchPedidos = async (req, res, next) => {
+    try {
+        const { idClient } = req.params;
+        const pedidos = await Pedidos.find({ cliente: idClient }).populate('cliente').populate({
+            path: 'pedido.producto',
+            model: 'Productos'
+        });
+        
+        if(pedidos.length > 0) {
+            res.json(pedidos);
+        } else {
+            res.json({ mensaje: 'Este cliente no tiene pedidos' });
+        }
+        
+    } catch (error) {
+        res.send(error);
         next();
     }
 }
@@ -38,7 +59,7 @@ exports.mostrarPedidoById = async (req, res, next) => {
         }
         res.json(pedido);
     } catch (error) {
-        console.log(error);
+        res.send(error);
         next();
     }
 }
@@ -51,7 +72,7 @@ exports.actualizarPedidoById = async (req, res, next) => {
         });
         res.json(pedido);
     } catch (error) {
-        console.log(error);
+        res.send(error);
         next();
     }
 }
@@ -61,6 +82,6 @@ exports.eliminarPedidoById = async(req, res, next) => {
         await Pedidos.findOneAndDelete({ _id: req.params.idPedido });
         res.json({ mensaje: 'Pedido eliminado con éxito' });
     } catch (error) {
-        console.log(error);
+        res.send(error);
     }
 }
